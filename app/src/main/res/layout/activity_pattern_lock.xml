@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/activity_pattern_lock"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context="com.example.android.perfectclock.PatternLock">
+    <com.andrognito.patternlockview.PatternLockView
+        android:id="@+id/pattern"
+        app:correctStateColor="@color/colorCorrectLine"
+        app:wrongStateColor="@color/colorWrongLine"
+        app:normalStateColor="@color/colorNormalLine"
+        android:background="@android:color/black"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent" />
+    <TextView
+        android:id="@+id/pattern_key"
+        android:textColor="@android:color/white"
+        android:textSize="20sp"
+        android:text="PASSWORD"
+        android:gravity="center"
+        android:layout_width="match_parent"
+        android:layout_height="32dp"
+        android:layout_alignParentBottom="true"
+        android:layout_margin="5dp"/>
+</RelativeLayout>
