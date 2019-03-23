@@ -59,6 +59,13 @@ public class MainActivity extends AppCompatActivity{
     protected void onCreate(final Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+        SharedPreferences sharedPreferences = getPreferences(MODE_PRIVATE);
+        if(sharedPreferences.getBoolean("Pairing",false)==false){
+            SharedPreferences.Editor editor = sharedPreferences.edit();
+            editor.putBoolean("Pairing",true);
+            editor.commit();
+            startActivity(new Intent(this,BluetoothPairing.class));
+        }
         Toolbar myToolbar = (Toolbar) findViewById(R.id.my_toolbar);
         setSupportActionBar(myToolbar);
         getSupportActionBar().setDisplayShowTitleEnabled(false);
@@ -398,4 +405,5 @@ public class MainActivity extends AppCompatActivity{
         sqLiteDatabase.close();
         return id;
     }
+
 }

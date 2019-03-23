@@ -48,7 +48,7 @@ public class AlarmAlertService extends Service {
                 startForeground(1,notification);
             }
         }).start();
-        return START_REDELIVER_INTENT;
+        return START_STICKY;
     }
     @Override
     public void onDestroy() {

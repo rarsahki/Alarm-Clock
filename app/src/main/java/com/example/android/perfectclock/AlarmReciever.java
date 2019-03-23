@@ -1,7 +1,5 @@
 package com.example.android.perfectclock;
 
-import android.app.AlarmManager;
-import android.app.PendingIntent;
 import android.content.BroadcastReceiver;
 import android.content.ContentValues;
 import android.content.Context;
@@ -170,13 +168,13 @@ public class AlarmReciever extends BroadcastReceiver {
         contentValues.put(Field.Table.COLUMN_MILLI,calendar.getTimeInMillis());
         sqLiteDatabase.update(Field.Table.TABLE_NAME,contentValues,Field.Table.COLUMN_HOUR_MINUTE+"="+"'"+time+"'",null);
         sqLiteDatabase.close();
-        AlarmManager alarmManager = (AlarmManager) context.getSystemService(Context.ALARM_SERVICE);
+        /*AlarmManager alarmManager = (AlarmManager) context.getSystemService(Context.ALARM_SERVICE);
         Intent intent_setAlarm = new Intent(context,AlarmReciever.class);
         PendingIntent pendingIntent = PendingIntent.getBroadcast(context,(int)calendar.getTimeInMillis(),intent_setAlarm,0);
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
             alarmManager.setExactAndAllowWhileIdle(AlarmManager.RTC_WAKEUP,calendar.getTimeInMillis(),pendingIntent);
         }
-        alarmManager.setExact(AlarmManager.RTC_WAKEUP,calendar.getTimeInMillis(),pendingIntent);
+        alarmManager.setExact(AlarmManager.RTC_WAKEUP,calendar.getTimeInMillis(),pendingIntent);*/
         new Thread(new Runnable() {
             @Override
             public void run() {

@@ -1,31 +1,41 @@
 package com.example.android.perfectclock;
 
+import android.bluetooth.BluetoothAdapter;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.graphics.Typeface;
 import android.media.AudioManager;
 import android.os.Bundle;
 import android.os.SystemClock;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
+import android.view.KeyEvent;
 import android.widget.TextView;
 import android.widget.Toast;
 
 import com.andrognito.patternlockview.PatternLockView;
 import com.andrognito.patternlockview.listener.PatternLockViewListener;
 import com.andrognito.patternlockview.utils.PatternLockUtils;
+import com.google.gson.Gson;
 
+import java.lang.reflect.Type;
 import java.util.ArrayList;
 import java.util.List;
 
-import static com.example.android.perfectclock.AlarmAlertService.volume;
-import static com.example.android.perfectclock.MainActivity.mediaPlayer;
 import static com.example.android.perfectclock.R.id.pattern;
 
 public class PatternLock extends AppCompatActivity {
     PatternLockView patternLockView;
-    String pattern1;
+    BluetoothAdapter bluetoothAdapter;
+    public ArrayList<BluetoothItem> devices;
+    int REQUEST_BLUETOOTH_ACCESS = 999;
+    String pattern1,json;
     ArrayList<Integer> arrayList = new ArrayList<>();
     TextView pattern_key;
+    Gson gson;
+    Type type;
+    ArrayList<BluetoothItem> savedDevices = new ArrayList<>();
+    SharedPreferences sharedPreferences;
     String random_txt = "";
     public static boolean pattern_status = false;
 
@@ -55,18 +65,14 @@ public class PatternLock extends AppCompatActivity {
             @Override
             public void onComplete(List<PatternLockView.Dot> pattern) {
                 if(PatternLockUtils.patternToString(patternLockView, pattern).equalsIgnoreCase(pattern1)){
-                    //if(mediaPlayer.isPlaying()!=true){
                         patternLockView.setViewMode(PatternLockView.PatternViewMode.CORRECT);
                         pattern_status = true;
                         Toast.makeText(getBaseContext(), "Correct!", Toast.LENGTH_LONG).show();
-                        Intent intent1 = new Intent(getBaseContext(),AlarmAlertService.class);
-                        mediaPlayer.release();
                         final AudioManager audioManager = (AudioManager) getSystemService(AUDIO_SERVICE);
-                        audioManager.setStreamVolume(AudioManager.STREAM_MUSIC,volume,0);
-                        stopService(intent1);
-                        Intent intent = new Intent(getBaseContext(),MainActivity.class);
-                        intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK|Intent.FLAG_ACTIVITY_CLEAR_TASK|Intent.FLAG_ACTIVITY_CLEAR_TOP);
-                        startActivity(intent);
+                        audioManager.setStreamVolume(AudioManager.STREAM_MUSIC,10,0);
+                        Intent bluetooth = new Intent(getBaseContext(),BluetoothPairing.class);
+                        bluetooth.putExtra("device","Rarsahki22");
+                        startActivity(bluetooth);
                 }else{
                     patternLockView.setViewMode(PatternLockView.PatternViewMode.WRONG);
                     Toast.makeText(getBaseContext(), "Incorrect! Draw pattern according to Numbers below", Toast.LENGTH_LONG).show();
@@ -404,5 +410,25 @@ public class PatternLock extends AppCompatActivity {
             randomGenerator(arrayList.get(arrayList.size()-1),chance,time);
         }
         return arrayList;
+    }
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+    }
+
+    @Override
+    public boolean onKeyDown(int keyCode, KeyEvent event) {
+        if(event.getKeyCode() == KeyEvent.KEYCODE_VOLUME_DOWN){
+            Toast.makeText(this,"Please Pass First",Toast.LENGTH_SHORT).show();
+            return true;
+        }
+        return super.onKeyUp(keyCode, event);
+    }
+    @Override
+    public boolean onKeyUp(int keyCode, KeyEvent event) {
+        if(event.getKeyCode() == KeyEvent.KEYCODE_VOLUME_DOWN){
+            return true;
+        }
+        return super.onKeyUp(keyCode, event);
     }
 }
