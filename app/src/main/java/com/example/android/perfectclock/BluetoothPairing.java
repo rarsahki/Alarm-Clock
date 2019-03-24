@@ -5,10 +5,13 @@ import android.app.Activity;
 import android.bluetooth.BluetoothAdapter;
 import android.bluetooth.BluetoothDevice;
 import android.content.BroadcastReceiver;
+import android.content.ContentValues;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.SharedPreferences;
+import android.database.Cursor;
+import android.database.sqlite.SQLiteDatabase;
 import android.graphics.Color;
 import android.media.AudioManager;
 import android.os.Bundle;
@@ -63,8 +66,6 @@ public class BluetoothPairing extends Activity {
             layoutParams.addRule(RelativeLayout.CENTER_HORIZONTAL);
             layoutParams.setMargins(0,0,0,16);
             refresh.setLayoutParams(layoutParams);
-            savedDevices = new ArrayList<>();
-            savedDevices = getArrayList("registeredDevices");
         }
         DisplayMetrics displayMetrics = new DisplayMetrics();
         getWindowManager().getDefaultDisplay().getMetrics(displayMetrics);
@@ -114,19 +115,29 @@ public class BluetoothPairing extends Activity {
             BlueToothList.setOnItemLongClickListener(new AdapterView.OnItemLongClickListener() {
                 @Override
                 public boolean onItemLongClick(AdapterView<?> parent, View view, int position, long id) {
+                    Table table = new Table(getBaseContext());
+                    SQLiteDatabase sqLiteDatabase = table.getWritableDatabase();
+                    ContentValues contentValues = new ContentValues();
                     View linearLayout = parent.getChildAt(position);
                     BluetoothItem bluetoothItem = (BluetoothItem) parent.getItemAtPosition(position);
                     TextView textView = (TextView) view.findViewById(R.id.BlueToothName);
                     if(textView.getCurrentTextColor()== Color.BLUE){
                         textView.setTextColor(Color.BLACK);
-                        registeredDevices.remove(bluetoothItem);
+                        for(int i=0;i<devices.size();i++){
+                            for(int i1=0;i1<count();i1++){
+                                if(bluetoothItem.getmMacAddress().equalsIgnoreCase(bluetoothMacAddress(i1))){
+                                    sqLiteDatabase.delete(Field.BluetoothTable.TABLE_NAME,Field.BluetoothTable.COLUMN_MACADDRESS+"="
+                                    +"'"+bluetoothItem.getmMacAddress()+"'",null);
+                                }
+                            }
+                        }
                     }else{
                         textView.setTextColor(Color.BLUE);
-                        registeredDevices.add(bluetoothItem);
+                        contentValues.put(Field.BluetoothTable.COLUMN_NAME,bluetoothItem.getmName());
+                        contentValues.put(Field.BluetoothTable.COLUMN_MACADDRESS,bluetoothItem.getmMacAddress());
+                        sqLiteDatabase.insert(Field.BluetoothTable.TABLE_NAME,null,contentValues);
                     }
-                    Toast.makeText(getBaseContext(),registeredDevices.size()+"",Toast.LENGTH_SHORT).show();
-                    saveArrayList(registeredDevices,"registeredDevices");
-                    Toast.makeText(getBaseContext(),getArrayList("registeredDevices").size()+"",Toast.LENGTH_SHORT).show();
+                    sqLiteDatabase.close();
                     return false;
                 }
             });
@@ -170,9 +181,8 @@ public class BluetoothPairing extends Activity {
                 }
                 bluetoothListAdapater.notifyDataSetChanged();
                 if(getIntent().getStringExtra("Search")!=null){
-                    for(int i=0;i<savedDevices.size();i++) {
-                        if (savedDevices.get(i).getmName().equalsIgnoreCase(name) ||
-                                savedDevices.get(i).getmMacAddress().equalsIgnoreCase(macAddress)) {
+                    for(int i=0;i<count();i++){
+                        if (macAddress.equalsIgnoreCase(bluetoothMacAddress(i))) {
                             mediaPlayer.stop();
                             mediaPlayer.release();
                             final AudioManager audioManager = (AudioManager) getSystemService(AUDIO_SERVICE);
@@ -234,6 +244,56 @@ public class BluetoothPairing extends Activity {
         String json = prefs.getString(key, null);
         Type type = new TypeToken<ArrayList<BluetoothItem>>() {}.getType();
         return gson.fromJson(json, type);
+    }
+
+    public View getViewByPosition(int pos, ListView listView) {
+        final int firstListItemPosition = listView.getFirstVisiblePosition();
+        final int lastListItemPosition = firstListItemPosition + listView.getChildCount() - 1;
+
+        if (pos < firstListItemPosition || pos > lastListItemPosition ) {
+            return listView.getAdapter().getView(pos, null, listView);
+        } else {
+            final int childIndex = pos - firstListItemPosition;
+            return listView.getChildAt(childIndex);
+        }
+    }
+
+    public String bluetoothName(int i){
+        Table table = new Table(getBaseContext());
+        SQLiteDatabase sqLiteDatabase = table.getReadableDatabase();
+        String column[] = {Field.BluetoothTable.COLUMN_NAME};
+        Cursor cursor = sqLiteDatabase.query(Field.BluetoothTable.TABLE_NAME,column,null,null,null,null,null);
+        cursor.moveToFirst();
+        String id = null;
+        if(cursor != null){
+            cursor.moveToPosition(i);
+            id = cursor.getString(cursor.getColumnIndexOrThrow(Field.BluetoothTable.COLUMN_NAME));
+        }
+        return id;
+    }
+
+    public String bluetoothMacAddress(int i){
+        Table table = new Table(getBaseContext());
+        SQLiteDatabase sqLiteDatabase = table.getReadableDatabase();
+        String column[] = {Field.BluetoothTable.COLUMN_MACADDRESS};
+        Cursor cursor = sqLiteDatabase.query(Field.BluetoothTable.TABLE_NAME,column,null,null,null,null,null);
+        cursor.moveToFirst();
+        String id = null;
+        if(cursor != null){
+            cursor.moveToPosition(i);
+            id = cursor.getString(cursor.getColumnIndexOrThrow(Field.BluetoothTable.COLUMN_MACADDRESS));
+        }
+        return id;
+    }
+
+    public int count(){
+        Table table = new Table(this);
+        SQLiteDatabase sqLiteDatabase = table.getReadableDatabase();
+        String column[] = {Field.BluetoothTable.COLUMN_NAME};
+        Cursor cursor = sqLiteDatabase.query(Field.BluetoothTable.TABLE_NAME,null,null,null,null,null,null);
+        int id = cursor.getCount();
+        sqLiteDatabase.close();
+        return id;
     }
 
 }

@@ -27,9 +27,12 @@ public class Table extends SQLiteOpenHelper {
             ", " + Field.Table.COLUMN_THURSDAY +" TEXT" + " NOT NULL" +
             ", " + Field.Table.COLUMN_FRIDAY +" TEXT" + " NOT NULL" +
             ", " + Field.Table.COLUMN_SATURDAY +" TEXT" + " NOT NULL" + ")";
+    public static final String CREATE_TABLE_BLUETOOTH = "CREATE TABLE " + Field.BluetoothTable.TABLE_NAME + "( " + Field.BluetoothTable.COLUMN_MACADDRESS + " TEXT" + " NOT NULL" + ", "
+            + Field.BluetoothTable.COLUMN_NAME + " TEXT" + " NOT NULL" + ")";
     @Override
     public void onCreate(SQLiteDatabase db) {
             db.execSQL(CREATE_TABLE_ALARM);
+            db.execSQL(CREATE_TABLE_BLUETOOTH);
     }
 
     @Override

@@ -27,4 +27,9 @@ public class Field {
         public static final String COLUMN_FRIDAY = "Friday";
         public static final String COLUMN_SATURDAY = "Saturday";
     }
+    public class BluetoothTable implements BaseColumns{
+        public static final String TABLE_NAME = "BluetoothDevices";
+        public static final String COLUMN_NAME = "name";
+        public static final String COLUMN_MACADDRESS = "macaddress";
+    }
 }

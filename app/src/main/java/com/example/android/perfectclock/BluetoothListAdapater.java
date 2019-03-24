@@ -1,7 +1,8 @@
 package com.example.android.perfectclock;
 
 import android.content.Context;
-import android.content.SharedPreferences;
+import android.database.Cursor;
+import android.database.sqlite.SQLiteDatabase;
 import android.graphics.Color;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -9,10 +10,6 @@ import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
 import android.widget.TextView;
 
-import com.google.gson.Gson;
-import com.google.gson.reflect.TypeToken;
-
-import java.lang.reflect.Type;
 import java.util.ArrayList;
 
 public class BluetoothListAdapater extends ArrayAdapter<BluetoothItem> {
@@ -46,34 +43,37 @@ public class BluetoothListAdapater extends ArrayAdapter<BluetoothItem> {
         }
         bluetoothItem = (BluetoothItem) getItem(position);
         TextView BlueToothName = convertView.findViewById(R.id.BlueToothName);
-        if(getArrayList("registeredDevices")!=null){
-            for(int i=0;i<getArrayList("registeredDevices").size();i++){
-                if(bluetoothItem.getmName().equalsIgnoreCase(getArrayList("registeredDevices").get(i).getmName())&&
-                        bluetoothItem.getmMacAddress().equalsIgnoreCase(getArrayList("registeredDevices").get(i).getmMacAddress())){
-                    BlueToothName.setTextColor(Color.BLUE);
-                }
-            }
-        }
         if(bluetoothItem.getmName().equalsIgnoreCase(""))
             BlueToothName.setText(bluetoothItem.getmMacAddress());
         else
             BlueToothName.setText(bluetoothItem.getmName());
+        for(int i=0;i<count();i++){
+            if(bluetoothMacAddress(i).equalsIgnoreCase(bluetoothItem.getmMacAddress())){
+                BlueToothName.setTextColor(Color.BLUE);
+            }
+        }
         return convertView;
     }
-    public void saveArrayList(ArrayList<BluetoothItem> list, String key){
-        SharedPreferences prefs = context.getSharedPreferences("savedDevices",Context.MODE_PRIVATE);
-        SharedPreferences.Editor editor = prefs.edit();
-        Gson gson = new Gson();
-        String json = gson.toJson(list);
-        editor.putString(key, json);
-        editor.apply();
-        editor.commit();
+    public String bluetoothMacAddress(int i){
+        Table table = new Table(context);
+        SQLiteDatabase sqLiteDatabase = table.getReadableDatabase();
+        String column[] = {Field.BluetoothTable.COLUMN_MACADDRESS};
+        Cursor cursor = sqLiteDatabase.query(Field.BluetoothTable.TABLE_NAME,column,null,null,null,null,null);
+        cursor.moveToFirst();
+        String id = null;
+        if(cursor != null){
+            cursor.moveToPosition(i);
+            id = cursor.getString(cursor.getColumnIndexOrThrow(Field.BluetoothTable.COLUMN_MACADDRESS));
+        }
+        return id;
     }
-    public ArrayList<BluetoothItem> getArrayList(String key){
-        SharedPreferences prefs = context.getSharedPreferences("savedDevices",Context.MODE_PRIVATE);
-        Gson gson = new Gson();
-        String json = prefs.getString(key, null);
-        Type type = new TypeToken<ArrayList<BluetoothItem>>() {}.getType();
-        return gson.fromJson(json, type);
+    public int count(){
+        Table table = new Table(context);
+        SQLiteDatabase sqLiteDatabase = table.getReadableDatabase();
+        String column[] = {Field.BluetoothTable.COLUMN_NAME};
+        Cursor cursor = sqLiteDatabase.query(Field.BluetoothTable.TABLE_NAME,null,null,null,null,null,null);
+        int id = cursor.getCount();
+        sqLiteDatabase.close();
+        return id;
     }
 }
