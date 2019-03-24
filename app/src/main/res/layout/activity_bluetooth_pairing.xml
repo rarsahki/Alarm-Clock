@@ -5,7 +5,7 @@
     android:id="@+id/bluetoothlayout"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@android:color/black"
+    android:background="@drawable/shape_bluetooth"
     tools:context=".BluetoothPairing">
     <RelativeLayout
         android:id="@+id/list"
@@ -21,7 +21,7 @@
     <android.support.design.widget.FloatingActionButton
         android:id="@+id/refresh"
         android:layout_margin="16dp"
-        android:src="@android:drawable/ic_menu_revert"
+        android:src="@drawable/refreshicon"
         android:layout_alignParentLeft="true"
         android:layout_centerHorizontal="true"
         android:layout_alignParentBottom="true"
@@ -30,7 +30,7 @@
     <android.support.design.widget.FloatingActionButton
         android:id="@+id/ok"
         android:layout_margin="16dp"
-        android:src="@drawable/ok_popup"
+        android:src="@drawable/tickicon"
         android:layout_alignParentRight="true"
         android:layout_centerHorizontal="true"
         android:layout_alignParentBottom="true"

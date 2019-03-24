@@ -27,7 +27,9 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.google.gson.Gson;
+import com.google.gson.reflect.TypeToken;
 
+import java.lang.reflect.Type;
 import java.util.ArrayList;
 
 import static com.example.android.perfectclock.AlarmAlertService.volume;
@@ -43,11 +45,12 @@ public class BluetoothPairing extends Activity {
     BluetoothAdapter bluetoothAdapter;
     BluetoothListAdapater bluetoothListAdapater;
     SharedPreferences sharedPreferences;
+    ArrayList<BluetoothItem> savedDevices;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_bluetooth_pairing);
-        if(getIntent().getStringExtra("device")!=null){
+        if(getIntent().getStringExtra("Search")!=null){
             RelativeLayout bluetoothlayout = findViewById(R.id.bluetoothlayout);
             ok = findViewById(R.id.ok);
             bluetoothlayout.removeView(ok);
@@ -60,6 +63,8 @@ public class BluetoothPairing extends Activity {
             layoutParams.addRule(RelativeLayout.CENTER_HORIZONTAL);
             layoutParams.setMargins(0,0,0,16);
             refresh.setLayoutParams(layoutParams);
+            savedDevices = new ArrayList<>();
+            savedDevices = getArrayList("registeredDevices");
         }
         DisplayMetrics displayMetrics = new DisplayMetrics();
         getWindowManager().getDefaultDisplay().getMetrics(displayMetrics);
@@ -89,6 +94,7 @@ public class BluetoothPairing extends Activity {
         refresh.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                bluetoothListAdapater.notifyDataSetChanged();
                 devices.clear();
                 IntentFilter listOfDevices = new IntentFilter(BluetoothDevice.ACTION_FOUND);
                 registerReceiver(receiver,listOfDevices);
@@ -96,7 +102,8 @@ public class BluetoothPairing extends Activity {
                     bluetoothAdapter.cancelDiscovery();
                 }
                 bluetoothAdapter.startDiscovery();
-                Toast.makeText(getBaseContext(),"Long click on device to register",Toast.LENGTH_LONG).show();
+                if(getIntent().getStringExtra("Search")==null)
+                    Toast.makeText(getBaseContext(),"Long Click To Register/Deregister",Toast.LENGTH_LONG).show();
             }
         });
         bluetoothListAdapater = new BluetoothListAdapater(devices,getBaseContext());
@@ -108,27 +115,24 @@ public class BluetoothPairing extends Activity {
                 @Override
                 public boolean onItemLongClick(AdapterView<?> parent, View view, int position, long id) {
                     View linearLayout = parent.getChildAt(position);
-                    TextView textView = linearLayout.findViewById(R.id.BlueToothName);
+                    BluetoothItem bluetoothItem = (BluetoothItem) parent.getItemAtPosition(position);
+                    TextView textView = (TextView) view.findViewById(R.id.BlueToothName);
                     if(textView.getCurrentTextColor()== Color.BLUE){
                         textView.setTextColor(Color.BLACK);
-                        registeredDevices.remove(position);
+                        registeredDevices.remove(bluetoothItem);
                     }else{
                         textView.setTextColor(Color.BLUE);
-                        registeredDevices.add(new BluetoothItem(textView.getText().toString()));
+                        registeredDevices.add(bluetoothItem);
                     }
+                    Toast.makeText(getBaseContext(),registeredDevices.size()+"",Toast.LENGTH_SHORT).show();
+                    saveArrayList(registeredDevices,"registeredDevices");
+                    Toast.makeText(getBaseContext(),getArrayList("registeredDevices").size()+"",Toast.LENGTH_SHORT).show();
                     return false;
                 }
             });
-            Toast.makeText(this,"Long Press To Register/Deregister",Toast.LENGTH_LONG).show();
             ok.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
-                    SharedPreferences sharedPreferences = getPreferences(MODE_PRIVATE);
-                    SharedPreferences.Editor editor = sharedPreferences.edit();
-                    Gson gson = new Gson();
-                    String json = gson.toJson(registeredDevices);
-                    editor.putString("registeredDevices",json);
-                    editor.commit();
                     finish();
                 }
             });
@@ -160,21 +164,26 @@ public class BluetoothPairing extends Activity {
                 String name = bluetoothDevice.getName();
                 String macAddress = bluetoothDevice.getAddress();
                 if(name == null){
-                    devices.add(new BluetoothItem(macAddress+""));
+                    devices.add(new BluetoothItem("",macAddress+""));
                 }else{
-                    devices.add(new BluetoothItem(name));
+                    devices.add(new BluetoothItem(name,macAddress+""));
                 }
                 bluetoothListAdapater.notifyDataSetChanged();
-                if(devices.get(devices.size()-1).getmName().equalsIgnoreCase(getIntent().getStringExtra("device"))){
-                    mediaPlayer.stop();
-                    mediaPlayer.release();
-                    final AudioManager audioManager = (AudioManager) getSystemService(AUDIO_SERVICE);
-                    audioManager.setStreamVolume(AudioManager.STREAM_MUSIC,(int)volume,0);
-                    Intent intent1 = new Intent(getBaseContext(),AlarmAlertService.class);
-                    stopService(intent1);
-                    Intent intent2 = new Intent(getBaseContext(),MainActivity.class);
-                    intent2.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK|Intent.FLAG_ACTIVITY_CLEAR_TASK|Intent.FLAG_ACTIVITY_CLEAR_TOP);
-                    startActivity(intent2);
+                if(getIntent().getStringExtra("Search")!=null){
+                    for(int i=0;i<savedDevices.size();i++) {
+                        if (savedDevices.get(i).getmName().equalsIgnoreCase(name) ||
+                                savedDevices.get(i).getmMacAddress().equalsIgnoreCase(macAddress)) {
+                            mediaPlayer.stop();
+                            mediaPlayer.release();
+                            final AudioManager audioManager = (AudioManager) getSystemService(AUDIO_SERVICE);
+                            audioManager.setStreamVolume(AudioManager.STREAM_MUSIC, (int) volume, 0);
+                            Intent intent1 = new Intent(getBaseContext(), AlarmAlertService.class);
+                            stopService(intent1);
+                            Intent intent2 = new Intent(getBaseContext(), MainActivity.class);
+                            intent2.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK | Intent.FLAG_ACTIVITY_CLEAR_TOP);
+                            startActivity(intent2);
+                        }
+                    }
                 }
             }else if(BluetoothAdapter.ACTION_DISCOVERY_FINISHED.equals(action)){
                 if(devices.size()==0){
@@ -209,4 +218,22 @@ public class BluetoothPairing extends Activity {
         }
         return super.onKeyUp(keyCode, event);
     }
+    public void saveArrayList(ArrayList<BluetoothItem> list, String key){
+        SharedPreferences prefs = getSharedPreferences("savedDevices",MODE_PRIVATE);
+        SharedPreferences.Editor editor = prefs.edit();
+        Gson gson = new Gson();
+        String json = gson.toJson(list);
+        editor.putString(key, json);
+        editor.apply();
+        editor.commit();
+    }
+
+    public ArrayList<BluetoothItem> getArrayList(String key){
+        SharedPreferences prefs = getSharedPreferences("savedDevices",MODE_PRIVATE);
+        Gson gson = new Gson();
+        String json = prefs.getString(key, null);
+        Type type = new TypeToken<ArrayList<BluetoothItem>>() {}.getType();
+        return gson.fromJson(json, type);
+    }
+
 }

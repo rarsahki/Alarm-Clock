@@ -18,8 +18,10 @@ import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.CompoundButton;
 import android.widget.FrameLayout;
 import android.widget.ListView;
+import android.widget.Switch;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -199,8 +201,30 @@ public class MainActivity extends AppCompatActivity{
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         getMenuInflater().inflate(R.menu.menu,menu);
-        menu.getItem(0).setIcon(R.drawable.sound).setShowAsAction(MenuItem.SHOW_AS_ACTION_ALWAYS);
-        menu.getItem(0).setIntent(new Intent(RingtoneManager.ACTION_RINGTONE_PICKER));
+        menu.getItem(1).setIcon(R.drawable.sound).setShowAsAction(MenuItem.SHOW_AS_ACTION_ALWAYS);
+        menu.getItem(1).setIntent(new Intent(RingtoneManager.ACTION_RINGTONE_PICKER));
+        Switch bluetoothswitch = menu.getItem(0).getActionView().findViewById(R.id.switch_bluetooth);
+        SharedPreferences sharedPreferences = getSharedPreferences("BluetoothAlarmStatus",MODE_PRIVATE);
+        if(sharedPreferences.getBoolean("BluetoothAlarmStatus",false)){
+            bluetoothswitch.setChecked(true);
+        }else{
+            bluetoothswitch.setChecked(false);
+        }
+        bluetoothswitch.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+            @Override
+            public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+                SharedPreferences sharedPreferences = getSharedPreferences("BluetoothAlarmStatus",MODE_PRIVATE);
+                final SharedPreferences.Editor editor = sharedPreferences.edit();
+                if(isChecked){
+                    editor.putBoolean("BluetoothAlarmStatus",true);
+                    editor.commit();
+                    startActivity(new Intent(getBaseContext(),BluetoothPairing.class));
+                }else {
+                    editor.putBoolean("BluetoothAlarmStatus",false);
+                    editor.commit();
+                }
+            }
+        });
         return true;
     }
 

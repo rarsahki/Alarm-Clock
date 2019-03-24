@@ -1,0 +1,25 @@
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
+    android:orientation="horizontal"
+    android:id="@+id/switch_layout">
+    <ImageView
+        android:layout_width="25dp"
+        android:layout_height="25dp"
+        android:layout_gravity="center"
+        android:gravity="center"
+        android:src="@android:drawable/stat_sys_data_bluetooth"
+        android:layout_toLeftOf="@+id/switch_bluetooth"
+        android:layout_centerVertical="true"/>
+    <Switch
+        android:id="@+id/switch_bluetooth"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center"
+        android:gravity="center"
+        android:switchMinWidth="54dp"
+        android:theme="@style/BluetoothSwitchTheme"
+        android:layout_centerVertical="true"
+        android:layout_margin="6dp"/>
+</LinearLayout>

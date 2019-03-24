@@ -22,6 +22,8 @@ import java.lang.reflect.Type;
 import java.util.ArrayList;
 import java.util.List;
 
+import static com.example.android.perfectclock.AlarmAlertService.volume;
+import static com.example.android.perfectclock.MainActivity.mediaPlayer;
 import static com.example.android.perfectclock.R.id.pattern;
 
 public class PatternLock extends AppCompatActivity {
@@ -70,9 +72,22 @@ public class PatternLock extends AppCompatActivity {
                         Toast.makeText(getBaseContext(), "Correct!", Toast.LENGTH_LONG).show();
                         final AudioManager audioManager = (AudioManager) getSystemService(AUDIO_SERVICE);
                         audioManager.setStreamVolume(AudioManager.STREAM_MUSIC,10,0);
-                        Intent bluetooth = new Intent(getBaseContext(),BluetoothPairing.class);
-                        bluetooth.putExtra("device","Rarsahki22");
-                        startActivity(bluetooth);
+                        SharedPreferences sharedPreferences = getSharedPreferences("BluetoothAlarmStatus",MODE_PRIVATE);
+                        if(sharedPreferences.getBoolean("BluetoothAlarmStatus",false)){
+                            Intent bluetooth = new Intent(getBaseContext(),BluetoothPairing.class);
+                            bluetooth.putExtra("Search","device");
+                            startActivity(bluetooth);
+                        }else{
+                            mediaPlayer.stop();
+                            mediaPlayer.release();
+                            final AudioManager audioManager1 = (AudioManager) getSystemService(AUDIO_SERVICE);
+                            audioManager1.setStreamVolume(AudioManager.STREAM_MUSIC, (int) volume, 0);
+                            Intent intent1 = new Intent(getBaseContext(), AlarmAlertService.class);
+                            stopService(intent1);
+                            Intent intent2 = new Intent(getBaseContext(), MainActivity.class);
+                            intent2.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK | Intent.FLAG_ACTIVITY_CLEAR_TOP);
+                            startActivity(intent2);
+                        }
                 }else{
                     patternLockView.setViewMode(PatternLockView.PatternViewMode.WRONG);
                     Toast.makeText(getBaseContext(), "Incorrect! Draw pattern according to Numbers below", Toast.LENGTH_LONG).show();
