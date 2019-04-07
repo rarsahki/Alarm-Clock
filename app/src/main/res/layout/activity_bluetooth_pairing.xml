@@ -28,6 +28,14 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content" />
     <android.support.design.widget.FloatingActionButton
+        android:id="@+id/paired"
+        android:layout_margin="16dp"
+        android:src="@drawable/pairedbluetoothicon"
+        android:layout_centerHorizontal="true"
+        android:layout_alignParentBottom="true"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content" />
+    <android.support.design.widget.FloatingActionButton
         android:id="@+id/ok"
         android:layout_margin="16dp"
         android:src="@drawable/tickicon"

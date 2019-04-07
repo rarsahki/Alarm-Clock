@@ -10,6 +10,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.SharedPreferences;
+import android.content.res.ColorStateList;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.graphics.Color;
@@ -42,9 +43,11 @@ public class BluetoothPairing extends Activity {
     int REQUEST_BLUETOOTH_ACCESS = 999;
     public ArrayList<BluetoothItem> devices;
     ArrayList<BluetoothItem> registeredDevices;
+    ArrayList<BluetoothItem> pairedDevices;
     ListView BlueToothList;
     FloatingActionButton refresh;
     FloatingActionButton ok;
+    FloatingActionButton paired;
     BluetoothAdapter bluetoothAdapter;
     BluetoothListAdapater bluetoothListAdapater;
     SharedPreferences sharedPreferences;
@@ -58,14 +61,23 @@ public class BluetoothPairing extends Activity {
             ok = findViewById(R.id.ok);
             bluetoothlayout.removeView(ok);
             refresh = findViewById(R.id.refresh);
+            paired =findViewById(R.id.paired);
             RelativeLayout.LayoutParams layoutParams = new RelativeLayout.LayoutParams(
                     ViewGroup.LayoutParams.WRAP_CONTENT,
                     ViewGroup.LayoutParams.WRAP_CONTENT
             );
             layoutParams.addRule(RelativeLayout.ALIGN_PARENT_BOTTOM);
-            layoutParams.addRule(RelativeLayout.CENTER_HORIZONTAL);
-            layoutParams.setMargins(0,0,0,16);
+            layoutParams.addRule(RelativeLayout.ALIGN_PARENT_LEFT);
+            layoutParams.setMargins(26,0,0,26);
+            RelativeLayout.LayoutParams layoutParams1 = new RelativeLayout.LayoutParams(
+                    ViewGroup.LayoutParams.WRAP_CONTENT,
+                    ViewGroup.LayoutParams.WRAP_CONTENT
+            );
+            layoutParams1.addRule(RelativeLayout.ALIGN_PARENT_BOTTOM);
+            layoutParams1.addRule(RelativeLayout.ALIGN_PARENT_RIGHT);
+            layoutParams1.setMargins(0,0,26,26);
             refresh.setLayoutParams(layoutParams);
+            paired.setLayoutParams(layoutParams1);
         }
         DisplayMetrics displayMetrics = new DisplayMetrics();
         getWindowManager().getDefaultDisplay().getMetrics(displayMetrics);
@@ -92,9 +104,17 @@ public class BluetoothPairing extends Activity {
         }
         bluetoothAdapter.startDiscovery();
         refresh = findViewById(R.id.refresh);
+        refresh.setBackgroundTintList(ColorStateList.valueOf(getResources().getColor(android.R.color.holo_orange_light)));
         refresh.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                refresh.setBackgroundTintList(ColorStateList.valueOf(getResources().getColor(android.R.color.holo_orange_light)));
+                paired.setBackgroundTintList(ColorStateList.valueOf(getResources().getColor(R.color.blueToothColor)));
+                if(ok != null){
+                    ok.setBackgroundTintList(ColorStateList.valueOf(getResources().getColor(R.color.blueToothColor)));
+                }
+                bluetoothListAdapater = new BluetoothListAdapater(devices,getBaseContext());
+                BlueToothList.setAdapter(bluetoothListAdapater);
                 bluetoothListAdapater.notifyDataSetChanged();
                 devices.clear();
                 IntentFilter listOfDevices = new IntentFilter(BluetoothDevice.ACTION_FOUND);
@@ -110,6 +130,25 @@ public class BluetoothPairing extends Activity {
         bluetoothListAdapater = new BluetoothListAdapater(devices,getBaseContext());
         BlueToothList = findViewById(R.id.BlueToothList);
         BlueToothList.setAdapter(bluetoothListAdapater);
+        paired = findViewById(R.id.paired);
+        paired.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                refresh.setBackgroundTintList(ColorStateList.valueOf(getResources().getColor(R.color.blueToothColor)));
+                paired.setBackgroundTintList(ColorStateList.valueOf(getResources().getColor(android.R.color.holo_orange_light)));
+                if(ok != null){
+                    ok.setBackgroundTintList(ColorStateList.valueOf(getResources().getColor(R.color.blueToothColor)));
+                }
+                pairedDevices = new ArrayList<>();
+                pairedDevices.clear();
+                for(int i=0;i<count();i++){
+                    pairedDevices.add(new BluetoothItem(bluetoothName(i),bluetoothMacAddress(i)));
+                }
+                bluetoothListAdapater = new BluetoothListAdapater(pairedDevices,getBaseContext());
+                BlueToothList.setAdapter(bluetoothListAdapater);
+                bluetoothListAdapater.notifyDataSetChanged();
+            }
+        });
         ok = findViewById(R.id.ok);
         if(ok != null){
             BlueToothList.setOnItemLongClickListener(new AdapterView.OnItemLongClickListener() {

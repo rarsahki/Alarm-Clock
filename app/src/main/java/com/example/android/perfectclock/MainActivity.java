@@ -1,9 +1,11 @@
 package com.example.android.perfectclock;
 
+import android.Manifest;
 import android.annotation.SuppressLint;
 import android.content.ContentValues;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.content.pm.PackageManager;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.graphics.Color;
@@ -11,8 +13,11 @@ import android.graphics.Typeface;
 import android.media.MediaPlayer;
 import android.media.RingtoneManager;
 import android.net.Uri;
+import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
+import android.support.annotation.NonNull;
+import android.support.v4.app.ActivityCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.view.Menu;
@@ -47,6 +52,7 @@ public class MainActivity extends AppCompatActivity{
     public static AlarmListAdapter alarmListAdapterl;
     public static SwipeMenuListView swipeMenuListView;
     FrameLayout addAlarm;
+    int PERMISSION_REQUEST_LOCATION = 123;
     Handler handler;
     public String realHour;
     public String real24Hour;
@@ -61,6 +67,15 @@ public class MainActivity extends AppCompatActivity{
     protected void onCreate(final Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+            if(getBaseContext().checkSelfPermission(Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED){
+                if(shouldShowRequestPermissionRationale(Manifest.permission.ACCESS_COARSE_LOCATION)){
+
+                }else{
+                    ActivityCompat.requestPermissions(getParent(),new String[]{Manifest.permission.ACCESS_COARSE_LOCATION},PERMISSION_REQUEST_LOCATION);
+                }
+            }
+        }
         SharedPreferences sharedPreferences = getPreferences(MODE_PRIVATE);
         if(sharedPreferences.getBoolean("Pairing",false)==false){
             SharedPreferences.Editor editor = sharedPreferences.edit();
@@ -120,10 +135,11 @@ public class MainActivity extends AppCompatActivity{
                 // set item width
                 editItem.setWidth(180);
                 // set item title
-                editItem.setIcon(R.drawable.editicon);
+                editItem.setIcon(R.drawable.editiconpopup);
                 // set item title fontsize
                 // set item title font color
                 editItem.setTitleColor(Color.WHITE);
+                editItem.setBackground(android.R.color.holo_green_light);
                 // add to menu
                 menu.addMenuItem(editItem);
 
@@ -136,7 +152,9 @@ public class MainActivity extends AppCompatActivity{
                 // set item width
                 deleteItem.setWidth(180);
                 // set a icon
-                deleteItem.setIcon(R.drawable.deleteicon);
+                deleteItem.setIcon(R.drawable.deleteiconpopup);
+                deleteItem.setTitleColor(Color.WHITE);
+                deleteItem.setBackground(android.R.color.holo_red_light);
                 // add to menu
                 menu.addMenuItem(deleteItem);
             }
@@ -199,6 +217,14 @@ public class MainActivity extends AppCompatActivity{
     }
 
     @Override
+    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
+        if(requestCode == PERMISSION_REQUEST_LOCATION && grantResults[0] == PackageManager.PERMISSION_DENIED){
+            Toast.makeText(this,"Enable Location to show available bluetooth devices",Toast.LENGTH_SHORT).show();
+        }
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
+    }
+
+    @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         getMenuInflater().inflate(R.menu.menu,menu);
         menu.getItem(1).setIcon(R.drawable.sound).setShowAsAction(MenuItem.SHOW_AS_ACTION_ALWAYS);
@@ -216,6 +242,15 @@ public class MainActivity extends AppCompatActivity{
                 SharedPreferences sharedPreferences = getSharedPreferences("BluetoothAlarmStatus",MODE_PRIVATE);
                 final SharedPreferences.Editor editor = sharedPreferences.edit();
                 if(isChecked){
+                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+                        if(getBaseContext().checkSelfPermission(Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED){
+                            if(shouldShowRequestPermissionRationale(Manifest.permission.ACCESS_COARSE_LOCATION)){
+
+                            }else{
+                                ActivityCompat.requestPermissions(getParent(),new String[]{Manifest.permission.ACCESS_COARSE_LOCATION},PERMISSION_REQUEST_LOCATION);
+                            }
+                        }
+                    }
                     editor.putBoolean("BluetoothAlarmStatus",true);
                     editor.commit();
                     startActivity(new Intent(getBaseContext(),BluetoothPairing.class));

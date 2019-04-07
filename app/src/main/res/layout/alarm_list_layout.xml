@@ -8,6 +8,13 @@
             android:layout_weight="1"
             android:orientation="horizontal"
             android:background="@color/colorPrimary">
+            <ImageView
+                android:id="@+id/arrow"
+                android:scaleType="fitXY"
+                android:src="@drawable/shape_arrow"
+                android:layout_alignParentLeft="true"
+                android:layout_width="10dp"
+                android:layout_height="match_parent" />
             <TextView
                 android:id="@+id/hour_id"
                 android:text="00"
