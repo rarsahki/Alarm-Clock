@@ -67,21 +67,21 @@ public class MainActivity extends AppCompatActivity{
     protected void onCreate(final Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-            if(getBaseContext().checkSelfPermission(Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED){
-                if(shouldShowRequestPermissionRationale(Manifest.permission.ACCESS_COARSE_LOCATION)){
-
-                }else{
-                    ActivityCompat.requestPermissions(getParent(),new String[]{Manifest.permission.ACCESS_COARSE_LOCATION},PERMISSION_REQUEST_LOCATION);
-                }
-            }
-        }
         SharedPreferences sharedPreferences = getPreferences(MODE_PRIVATE);
         if(sharedPreferences.getBoolean("Pairing",false)==false){
             SharedPreferences.Editor editor = sharedPreferences.edit();
             editor.putBoolean("Pairing",true);
             editor.commit();
             startActivity(new Intent(this,BluetoothPairing.class));
+        }
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+            if(getBaseContext().checkSelfPermission(Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED){
+                if(shouldShowRequestPermissionRationale(Manifest.permission.ACCESS_COARSE_LOCATION)){
+
+                }else{
+                    ActivityCompat.requestPermissions(MainActivity.this,new String[]{Manifest.permission.ACCESS_COARSE_LOCATION},PERMISSION_REQUEST_LOCATION);
+                }
+            }
         }
         Toolbar myToolbar = (Toolbar) findViewById(R.id.my_toolbar);
         setSupportActionBar(myToolbar);

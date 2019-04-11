@@ -44,6 +44,10 @@ public class PatternLock extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        bluetoothAdapter = BluetoothAdapter.getDefaultAdapter();
+        if(bluetoothAdapter.isEnabled()){
+            bluetoothAdapter.disable();
+        }
         setContentView(R.layout.activity_pattern_lock);
         patternLockView = (PatternLockView) findViewById(pattern);
         patternLockView.setTactileFeedbackEnabled(true);
