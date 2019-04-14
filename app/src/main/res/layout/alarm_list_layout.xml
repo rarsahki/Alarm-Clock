@@ -9,7 +9,6 @@
             android:orientation="horizontal"
             android:background="@color/colorPrimary">
             <ImageView
-                android:id="@+id/arrow"
                 android:scaleType="fitXY"
                 android:src="@drawable/shape_arrow"
                 android:layout_alignParentLeft="true"

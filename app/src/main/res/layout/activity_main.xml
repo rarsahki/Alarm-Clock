@@ -2,7 +2,6 @@
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    android:id="@+id/activity_main"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="#1B1B1B"
@@ -41,6 +40,60 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:orientation="vertical">
+        <LinearLayout
+            android:id="@+id/battery_ignore_layout"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal">
+            <TextView
+                android:layout_weight="3"
+                android:textSize="15dp"
+                android:layout_below="@+id/my_toolbar"
+                android:textColor="@color/white"
+                android:gravity="center"
+                android:text="Please ignore battery optimization/disable optimization for app to work"
+                android:layout_width="match_parent"
+                android:layout_height="50dp"
+                android:layout_centerHorizontal="true"
+                android:layout_alignParentTop="true">
+            </TextView>
+            <Button
+                android:layout_weight="1"
+                android:background="@android:color/holo_red_light"
+                android:textColor="#1B1B1B"
+                android:text="OK"
+                android:layout_gravity="center"
+                android:id="@+id/ignore_battery_intent"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content" />
+        </LinearLayout>
+        <LinearLayout
+            android:id="@+id/autostart_layout"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal">
+            <TextView
+                android:layout_weight="3"
+                android:textSize="15dp"
+                android:layout_below="@+id/my_toolbar"
+                android:textColor="@color/white"
+                android:gravity="center"
+                android:text="Please enable AutoStart (Check Alarm Clock app settings, if option exists, enable it)"
+                android:layout_width="match_parent"
+                android:layout_height="50dp"
+                android:layout_centerHorizontal="true"
+                android:layout_alignParentTop="true">
+            </TextView>
+            <Button
+                android:layout_weight="1"
+                android:background="@android:color/holo_red_light"
+                android:textColor="#1B1B1B"
+                android:text="OK"
+                android:layout_gravity="center"
+                android:id="@+id/autostart_intent"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content" />
+        </LinearLayout>
         <RelativeLayout
             android:layout_marginTop="32dp"
             android:layout_marginLeft="85dp"

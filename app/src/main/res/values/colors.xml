@@ -2,7 +2,6 @@
 <resources>
     <color name="colorPrimary">#1B1B1B</color>
     <color name="colorPrimaryDark">#141414</color>
-    <color name="colorAccent">#FF4081</color>
     <color name="colorCorrectLine">#1f78ff</color>
     <color name="colorNormalLine">#FFFF</color>
     <color name="colorWrongLine">#FF0000</color>

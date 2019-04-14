@@ -41,7 +41,7 @@ public class BluetoothListAdapater extends ArrayAdapter<BluetoothItem> {
         if(convertView == null) {
             convertView = LayoutInflater.from(context).inflate(R.layout.bluetoothitem, parent, false);
         }
-        bluetoothItem = (BluetoothItem) getItem(position);
+        bluetoothItem = getItem(position);
         TextView BlueToothName = convertView.findViewById(R.id.BlueToothName);
         if(bluetoothItem.getmName().equalsIgnoreCase(""))
             BlueToothName.setText(bluetoothItem.getmMacAddress());

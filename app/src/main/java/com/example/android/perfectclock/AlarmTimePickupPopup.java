@@ -65,9 +65,9 @@ public class AlarmTimePickupPopup extends Activity {
         getWindow().setAttributes(wLayoutParams);
         handler = new Handler();
         handler.postDelayed(runnable, 0);
-        timePicker = (TimePicker) findViewById(R.id.timePicker);
+        timePicker = findViewById(R.id.timePicker);
         repeat_days = new ArrayList<>();
-        ok_alarm = (Button) findViewById(R.id.ok_button);
+        ok_alarm = findViewById(R.id.ok_button);
         monday =  findViewById(R.id.monday_check);
         tuesday =  findViewById(R.id.tuesday_check);
         wednesday =  findViewById(R.id.wednesday_check);

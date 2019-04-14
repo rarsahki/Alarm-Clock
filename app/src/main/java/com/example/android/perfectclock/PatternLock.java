@@ -49,9 +49,9 @@ public class PatternLock extends AppCompatActivity {
             bluetoothAdapter.disable();
         }
         setContentView(R.layout.activity_pattern_lock);
-        patternLockView = (PatternLockView) findViewById(pattern);
+        patternLockView = findViewById(pattern);
         patternLockView.setTactileFeedbackEnabled(true);
-        pattern_key = (TextView) findViewById(R.id.pattern_key);
+        pattern_key = findViewById(R.id.pattern_key);
         Typeface custom_font = Typeface.createFromAsset(getAssets(),"fonts/1942.ttf");
         pattern1 = randomPatternGenerator();
         pattern_key.setTypeface(custom_font);
@@ -85,7 +85,7 @@ public class PatternLock extends AppCompatActivity {
                             mediaPlayer.stop();
                             mediaPlayer.release();
                             final AudioManager audioManager1 = (AudioManager) getSystemService(AUDIO_SERVICE);
-                            audioManager1.setStreamVolume(AudioManager.STREAM_MUSIC, (int) volume, 0);
+                            audioManager1.setStreamVolume(AudioManager.STREAM_MUSIC, volume, 0);
                             Intent intent1 = new Intent(getBaseContext(), AlarmAlertService.class);
                             stopService(intent1);
                             Intent intent2 = new Intent(getBaseContext(), MainActivity.class);

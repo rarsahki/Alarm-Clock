@@ -284,11 +284,11 @@ public class AlarmListAdapter extends BaseAdapter {
         Switch state;
 
         public ViewHolder(View view) {
-            hour = (TextView)view.findViewById(R.id.hour_id);
-            minute = (TextView) view.findViewById(R.id.minute_id);
-            setting = (TextView) view.findViewById(R.id.setting_id);
-            state = (Switch) view.findViewById(R.id.switch_state);
-            millis = (TextView) view.findViewById(R.id.millis);
+            hour = view.findViewById(R.id.hour_id);
+            minute = view.findViewById(R.id.minute_id);
+            setting = view.findViewById(R.id.setting_id);
+            state = view.findViewById(R.id.switch_state);
+            millis = view.findViewById(R.id.millis);
         }
     }
     // Helper methods to get the item details from the database

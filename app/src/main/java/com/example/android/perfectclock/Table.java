@@ -10,7 +10,6 @@ import android.database.sqlite.SQLiteOpenHelper;
 
 public class Table extends SQLiteOpenHelper {
     public static final String DATABASE_NAME = "ALARM";
-
     public Table(Context context) {
         super(context, DATABASE_NAME , null, 1);
     }

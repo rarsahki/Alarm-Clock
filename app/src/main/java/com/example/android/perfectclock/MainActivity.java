@@ -16,6 +16,7 @@ import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
+import android.provider.Settings;
 import android.support.annotation.NonNull;
 import android.support.v4.app.ActivityCompat;
 import android.support.v7.app.AppCompatActivity;
@@ -23,8 +24,10 @@ import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.Button;
 import android.widget.CompoundButton;
 import android.widget.FrameLayout;
+import android.widget.LinearLayout;
 import android.widget.ListView;
 import android.widget.Switch;
 import android.widget.TextView;
@@ -61,13 +64,15 @@ public class MainActivity extends AppCompatActivity{
     String realMark;
     String realDate;
     Uri ringtone;
+    Button battery_intent;
+    Button autostart_intent;
     final int REQUEST_PERMISSION_GPS = 1;
     @SuppressLint("MissingPermission")
     @Override
     protected void onCreate(final Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-        SharedPreferences sharedPreferences = getPreferences(MODE_PRIVATE);
+        final SharedPreferences sharedPreferences = getPreferences(MODE_PRIVATE);
         if(sharedPreferences.getBoolean("Pairing",false)==false){
             SharedPreferences.Editor editor = sharedPreferences.edit();
             editor.putBoolean("Pairing",true);
@@ -83,7 +88,39 @@ public class MainActivity extends AppCompatActivity{
                 }
             }
         }
-        Toolbar myToolbar = (Toolbar) findViewById(R.id.my_toolbar);
+        //to enabe autostart
+        if(sharedPreferences.getBoolean("PRESSEDA",false)==true){
+            LinearLayout battery_ignore = findViewById(R.id.autostart_layout);
+            battery_ignore.setVisibility(View.GONE);
+        }
+        autostart_intent = findViewById(R.id.autostart_intent);
+        autostart_intent.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                SharedPreferences.Editor editor = sharedPreferences.edit();
+                editor.putBoolean("PRESSEDA",true);
+                editor.commit();
+                Toast.makeText(getBaseContext(),"I shall disappear once you reopen the app",Toast.LENGTH_SHORT).show();
+            }
+        });
+        //to ignore battery optimization
+        if(sharedPreferences.getBoolean("PRESSEDB",false)==true){
+            LinearLayout battery_ignore = findViewById(R.id.battery_ignore_layout);
+            battery_ignore.setVisibility(View.GONE);
+        }
+        battery_intent = findViewById(R.id.ignore_battery_intent);
+        battery_intent.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                SharedPreferences.Editor editor = sharedPreferences.edit();
+                editor.putBoolean("PRESSEDB",true);
+                editor.commit();
+                Intent battery_intent = new Intent();
+                battery_intent.setAction(Settings.ACTION_IGNORE_BATTERY_OPTIMIZATION_SETTINGS);
+                startActivity(battery_intent);
+            }
+        });
+        Toolbar myToolbar = findViewById(R.id.my_toolbar);
         setSupportActionBar(myToolbar);
         getSupportActionBar().setDisplayShowTitleEnabled(false);
         myToolbar.setTitle(null);
@@ -94,12 +131,12 @@ public class MainActivity extends AppCompatActivity{
                 startActivity(intent);
             }
         }
-        hour = (TextView)findViewById(R.id.hour_id);
-        minute = (TextView)findViewById(R.id.minute_id);
-        second = (TextView)findViewById(R.id.second_id);
-        setting = (TextView)findViewById(R.id.setting_id);
-        date = (TextView)findViewById(R.id.date_id);
-        swipeMenuListView = (SwipeMenuListView) findViewById(R.id.alarm_list);
+        hour = findViewById(R.id.hour_id);
+        minute = findViewById(R.id.minute_id);
+        second = findViewById(R.id.second_id);
+        setting = findViewById(R.id.setting_id);
+        date = findViewById(R.id.date_id);
+        swipeMenuListView = findViewById(R.id.alarm_list);
         Typeface custom_font = Typeface.createFromAsset(getAssets(),"fonts/digital-7.ttf");
         hour.setTypeface(custom_font);
         minute.setTypeface(custom_font);
@@ -107,7 +144,7 @@ public class MainActivity extends AppCompatActivity{
         setting.setTypeface(custom_font);
         handler = new Handler();
         handler.postDelayed(runnable,0);
-        addAlarm = (FrameLayout) findViewById(R.id.add_alarm);
+        addAlarm = findViewById(R.id.add_alarm);
         addAlarm.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {

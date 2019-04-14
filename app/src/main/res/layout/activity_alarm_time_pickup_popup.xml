@@ -1,7 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
-    android:id="@+id/activity_alarm_time_pickup_popup"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:background="@drawable/popup_alarm_time"
@@ -28,7 +27,6 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content" />
         <LinearLayout
-            android:id="@+id/RadioButtons"
             android:background="@android:color/white"
             android:layout_below="@+id/repeat_textview"
             android:layout_width="match_parent"

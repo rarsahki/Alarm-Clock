@@ -159,7 +159,7 @@ public class BluetoothPairing extends Activity {
                     ContentValues contentValues = new ContentValues();
                     View linearLayout = parent.getChildAt(position);
                     BluetoothItem bluetoothItem = (BluetoothItem) parent.getItemAtPosition(position);
-                    TextView textView = (TextView) view.findViewById(R.id.BlueToothName);
+                    TextView textView = view.findViewById(R.id.BlueToothName);
                     if(textView.getCurrentTextColor()== Color.BLUE){
                         textView.setTextColor(Color.BLACK);
                         for(int i=0;i<devices.size();i++){
@@ -225,9 +225,12 @@ public class BluetoothPairing extends Activity {
                             mediaPlayer.stop();
                             mediaPlayer.release();
                             final AudioManager audioManager = (AudioManager) getSystemService(AUDIO_SERVICE);
-                            audioManager.setStreamVolume(AudioManager.STREAM_MUSIC, (int) volume, 0);
+                            audioManager.setStreamVolume(AudioManager.STREAM_MUSIC, volume, 0);
                             Intent intent1 = new Intent(getBaseContext(), AlarmAlertService.class);
                             stopService(intent1);
+                            if(bluetoothAdapter.isEnabled()){
+                                bluetoothAdapter.disable();
+                            }
                             Intent intent2 = new Intent(getBaseContext(), MainActivity.class);
                             intent2.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK | Intent.FLAG_ACTIVITY_CLEAR_TOP);
                             startActivity(intent2);
